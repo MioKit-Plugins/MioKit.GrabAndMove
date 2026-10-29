@@ -1,0 +1,12 @@
+{
+  "metadataVersion": "1.0",
+  "id": "com.tinyisle.plugin.grab-and-move",
+  "name": "抓取移动",
+  "description": "按住修饰键后在窗口任意位置拖动以移动或调整大小",
+  "category": "Category",
+  "author": "tinyisle",
+  "assembly": "MioKit.GrabAndMove.dll",
+  "minSdkVersion": "1.2.3",
+  "minHostVersion": "1.2.3",
+  "nugetDependents": []
+}

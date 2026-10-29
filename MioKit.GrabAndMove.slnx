@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Plugin/">
+    <Project Path="plugin/MioKit.GrabAndMove.csproj" />
+  </Folder>
+  <Folder Name="/Preview/">
+    <Project Path="preview/MioKit.GrabAndMove.Preview.csproj" />
+  </Folder>
+  <Folder Name="/Publish/" />
+</Solution>
