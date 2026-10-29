@@ -1,11 +1,23 @@
 using GrabAndMove.Nodes;
+using GrabAndMove.Services;
 
 namespace GrabAndMove;
 
-public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
+[EavType(GrabAndMoveConst.PluginTypeId)]
+public class GrabAndMovePlugin : PluginBase,
+    IGrabAndMovePluginFeature,
+    IPluginMainWindowFeature,
+    IInvokeFeature,
+    ISearchableFeature,
+    IUseFeature,
+    IHotkeyFeature,
+    IAliasNameFeature,
+    IResultActionProviderFeature
 {
     public GrabAndMovePlugin() : base(GrabAndMoveConst.PluginId)
     {
+        Name = "抓取移动";
+        Description = "按住修饰键在窗口任意位置拖动以移动或调整大小";
         PreloadPropertySource =
         [
             ..PreloadPropertySource,
@@ -14,7 +26,11 @@ public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
             GrabAndMoveExtension.PreventAltWindowMenuProperty,
             GrabAndMoveExtension.RightClickResizeEnabledProperty,
             GrabAndMoveExtension.ExcludedAppsProperty,
-            GrabAndMoveExtension.ModifierExcludedAppsProperty
+            GrabAndMoveExtension.ModifierExcludedAppsProperty,
+            AliasNameExtension.AliasNameProperty,
+            HotkeyExtension.HotkeyProperty,
+            RecentExtension.UseCountProperty,
+            RecentExtension.LastUseTimeProperty
         ];
     }
 
@@ -37,7 +53,7 @@ public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
             var group = this.FindFirstDescendant<GrabAndMoveSearchGroup>(
                 node => node.Id == GrabAndMoveConst.SearchGroupId)!;
             group.Name = "抓取移动";
-            group.Description = "启动或停止按住修饰键拖动窗口";
+            group.Description = "打开配置，或启动 / 停止手势";
             defaults[group] = CreateNameDefaults(group);
         }
 
@@ -46,7 +62,7 @@ public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
             var start = this.FindFirstDescendant<StartGrabAndMoveNode>(
                 node => node.Id == GrabAndMoveConst.StartNodeId)!;
             start.Name = "启动抓取移动";
-            start.Description = "启用修饰键拖动移动/调整窗口大小";
+            start.Description = "启用手势，不打开配置窗口";
             defaults[start] = CreateNameDefaults(start);
         }
 
@@ -55,7 +71,7 @@ public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
             var stop = this.FindFirstDescendant<StopGrabAndMoveNode>(
                 node => node.Id == GrabAndMoveConst.StopNodeId)!;
             stop.Name = "停止抓取移动";
-            stop.Description = "停用抓取移动手势";
+            stop.Description = "停用手势，不打开配置窗口";
             defaults[stop] = CreateNameDefaults(stop);
         }
 
@@ -65,6 +81,48 @@ public class GrabAndMovePlugin : PluginBase, IGrabAndMovePluginFeature
 
     public override Task EnsureSubTreeLoadedAsync()
         => EnsureTreeLoadedAsync<GrabAndMoveSearchGroup>(GrabAndMoveConst.SearchGroupId);
+
+    public void OpenPluginMainWindow()
+    {
+        GrabAndMoveRegister.Instance.ComponentContext
+            .Resolve<GrabAndMoveWindowService>()
+            .ShowConfigWindowAsync();
+    }
+
+    public async Task InvokeAsync(InvokeContext context)
+    {
+        OpenPluginMainWindow();
+        await this.IncreaseAsync();
+    }
+
+    public ValueTask SearchAsync(
+        SearchRequest request,
+        IWriteOnlyResultList<SearchResult> results,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (request.IsEmptyText)
+            return ValueTask.CompletedTask;
+
+        if (!this.TryMatch(request.SearchText!, out var match, out var title))
+            return ValueTask.CompletedTask;
+
+        results.Add(new SearchResult(request, this)
+        {
+            Title = title,
+            Description = Description,
+            MatchResult = match!.Value,
+            Source = "抓取移动"
+        });
+        return ValueTask.CompletedTask;
+    }
+
+    public ValueTask<IEnumerable<ISearchResultAction>> GetActionAsync(SearchResult searchResult) =>
+        ValueTask.FromResult<IEnumerable<ISearchResultAction>>(
+        [
+            AliasNameAction.Instance,
+            HotKeyAction.Instance
+        ]);
 
     private static Dictionary<IAttachEavProperty, object> CreateNameDefaults(MioObject node)
         => new()

@@ -1,0 +1,29 @@
+<shad:ShadWindow xmlns="https://github.com/avaloniaui"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                 xmlns:shad="https://github.com/tiny-isle/Ti.Avalonia.Shadcn"
+                 xmlns:mio="https://github.com/tiny-isle/MioKit"
+                 xmlns:views="clr-namespace:GrabAndMove.Views"
+                 mc:Ignorable="d"
+                 d:DesignWidth="600"
+                 d:DesignHeight="680"
+                 Width="600"
+                 Height="680"
+                 MinWidth="520"
+                 MinHeight="560"
+                 CanPin="True"
+                 WindowStartupLocation="CenterScreen"
+                 x:Class="GrabAndMove.Views.GrabAndMoveConfigWindow"
+                 x:DataType="views:GrabAndMoveConfigViewModel"
+                 Title="抓取移动">
+  <Interaction.Behaviors>
+    <mio:PluginWindowBehavior Type="com.tinyisle.plugin.grab-and-move" />
+  </Interaction.Behaviors>
+
+  <shad:ShadWindow.Hosts>
+    <shad:ShadToastHost />
+  </shad:ShadWindow.Hosts>
+
+  <views:GrabAndMoveConfigPage />
+</shad:ShadWindow>

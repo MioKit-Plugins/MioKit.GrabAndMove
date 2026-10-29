@@ -8,3 +8,5 @@ global using System.Threading.Tasks;
 global using Autofac;
 global using Microsoft.Extensions.DependencyInjection;
 global using MioKit.Sdk;
+global using Avalonia.Controls;
+global using Avalonia.Xaml.Interactivity;

@@ -1,5 +1,6 @@
 using GrabAndMove.Nodes;
 using GrabAndMove.Services;
+using GrabAndMove.Views;
 
 namespace GrabAndMove;
 
@@ -35,5 +36,12 @@ public class GrabAndMoveRegister : RegisterBase<GrabAndMoveRegister>
             .AsSelf()
             .As<IPluginLifecycleComponent>()
             .SingleInstance();
+
+        builder.RegisterType<GrabAndMoveWindowService>()
+            .AsSelf()
+            .SingleInstance();
+
+        builder.RegisterType<GrabAndMoveConfigViewModel>()
+            .AsSelf();
     }
 }

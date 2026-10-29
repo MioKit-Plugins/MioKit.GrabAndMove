@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using GrabAndMove.Views;
 
 namespace GrabAndMove.Preview.Views;
 
@@ -12,7 +13,10 @@ public partial class MainWindow : Window
 
     private void LoadPluginPreview()
     {
-        // 示例：在 plugin/Views 中创建 UserControl 后，在此 new 并赋给 PluginPreviewHost.Content
-        // PluginPreviewHost.Content = new GrabAndMove.Views.MyPluginView();
+        // Layout preview without host DI: bind empty VM shell (toggles won't persist).
+        PluginPreviewHost.Content = new GrabAndMoveConfigPage
+        {
+            DataContext = GrabAndMoveConfigViewModel.CreateDesignPreview()
+        };
     }
 }

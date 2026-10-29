@@ -1,0 +1,248 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:shad="https://github.com/tiny-isle/Ti.Avalonia.Shadcn"
+             xmlns:views="clr-namespace:GrabAndMove.Views"
+             mc:Ignorable="d"
+             d:DesignWidth="560"
+             d:DesignHeight="640"
+             x:Class="GrabAndMove.Views.GrabAndMoveConfigPage"
+             x:DataType="views:GrabAndMoveConfigViewModel">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="20"
+                Spacing="16">
+
+      <Border Classes="Card"
+              Padding="16,18"
+              CornerRadius="16"
+              Background="{DynamicResource ShadMutedBrush}">
+        <StackPanel Spacing="14">
+          <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal"
+                        Spacing="10"
+                        VerticalAlignment="Center">
+              <Border Width="36"
+                      Height="36"
+                      CornerRadius="10"
+                      Background="{DynamicResource ShadPrimaryBrush}"
+                      VerticalAlignment="Center">
+                <LucideIcon Kind="Move"
+                            Size="18"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource ShadPrimaryForegroundBrush}" />
+              </Border>
+              <StackPanel VerticalAlignment="Center"
+                          Spacing="2">
+                <TextBlock Text="抓取移动"
+                           FontSize="16"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="按住修饰键，在窗口任意位置拖动"
+                           Classes="Small Muted"
+                           TextWrapping="Wrap" />
+              </StackPanel>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1"
+                        Spacing="8"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+              <Border Padding="10,4"
+                      CornerRadius="999"
+                      HorizontalAlignment="Right"
+                      Background="{DynamicResource ShadCardBrush}"
+                      BorderBrush="{DynamicResource ShadBorderBrush}"
+                      BorderThickness="1">
+                <TextBlock Text="{Binding StatusText}"
+                           Classes="Small"
+                           FontWeight="SemiBold" />
+              </Border>
+              <StackPanel Orientation="Horizontal"
+                          Spacing="8"
+                          HorizontalAlignment="Right">
+                <TextBlock Text="启用"
+                           VerticalAlignment="Center"
+                           Classes="Small" />
+                <ToggleSwitch IsChecked="{Binding IsFeatureEnabled}"
+                              OffContent=""
+                              OnContent="" />
+              </StackPanel>
+            </StackPanel>
+          </Grid>
+
+          <Grid ColumnDefinitions="*,8,*"
+                Opacity="{Binding GestureCardsOpacity}">
+            <Border Grid.Column="0"
+                    Padding="12"
+                    CornerRadius="12"
+                    Background="{DynamicResource ShadCardBrush}"
+                    BorderBrush="{DynamicResource ShadBorderBrush}"
+                    BorderThickness="1"
+                    IsHitTestVisible="False">
+              <StackPanel Spacing="4">
+                <TextBlock Text="左键 · 移动"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="{Binding MoveGestureHint}"
+                           Classes="Small Muted" />
+              </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Padding="12"
+                    CornerRadius="12"
+                    Background="{DynamicResource ShadCardBrush}"
+                    BorderBrush="{DynamicResource ShadBorderBrush}"
+                    BorderThickness="1"
+                    Opacity="{Binding ResizeHintOpacity}"
+                    IsHitTestVisible="False">
+              <StackPanel Spacing="4">
+                <TextBlock Text="右键 · 调整大小"
+                           FontWeight="SemiBold" />
+                <TextBlock Text="{Binding ResizeGestureHint}"
+                           Classes="Small Muted" />
+              </StackPanel>
+            </Border>
+          </Grid>
+        </StackPanel>
+      </Border>
+
+      <StackPanel Spacing="8">
+        <TextBlock Text="手势"
+                   Classes="H4" />
+        <TextBlock Text="更改后立即生效"
+                   Classes="Small Muted" />
+
+        <TextBlock Text="激活修饰键"
+                   Margin="0,4,0,0"
+                   FontWeight="SemiBold" />
+        <Grid ColumnDefinitions="*,8,*">
+          <Button Grid.Column="0"
+                  Classes="Outline"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left"
+                  Padding="14,12"
+                  Command="{Binding SelectAltModifierCommand}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Alt"
+                         FontSize="15"
+                         FontWeight="SemiBold" />
+              <TextBlock Text="默认，兼容多数应用"
+                         Classes="Small Muted"
+                         TextWrapping="Wrap" />
+              <TextBlock Text="已选中"
+                         Classes="Small"
+                         IsVisible="{Binding IsAltSelected}"
+                         Foreground="{DynamicResource ShadPrimaryBrush}" />
+            </StackPanel>
+          </Button>
+
+          <Button Grid.Column="2"
+                  Classes="Outline"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Left"
+                  Padding="14,12"
+                  Command="{Binding SelectWinModifierCommand}">
+            <StackPanel Spacing="2">
+              <TextBlock Text="Windows"
+                         FontSize="15"
+                         FontWeight="SemiBold" />
+              <TextBlock Text="避免与菜单快捷键冲突"
+                         Classes="Small Muted"
+                         TextWrapping="Wrap" />
+              <TextBlock Text="已选中"
+                         Classes="Small"
+                         IsVisible="{Binding IsWinSelected}"
+                         Foreground="{DynamicResource ShadPrimaryBrush}" />
+            </StackPanel>
+          </Button>
+        </Grid>
+
+        <shad:SettingItemControl Title="右键调整大小"
+                                 Description="按住修饰键并用右键拖动，从最近边或角调整窗口大小。">
+          <shad:SettingItemControl.Icon>
+            <LucideIcon Kind="Scaling" />
+          </shad:SettingItemControl.Icon>
+          <ToggleSwitch IsChecked="{Binding RightClickResizeEnabled}"
+                        OffContent=""
+                        OnContent="" />
+        </shad:SettingItemControl>
+
+        <shad:SettingItemControl Title="抑制 Alt 窗口菜单"
+                                 Description="拖动或缩放后松开 Alt 时，不再弹出系统窗口菜单。"
+                                 IsVisible="{Binding ShowPreventAltMenu}">
+          <shad:SettingItemControl.Icon>
+            <LucideIcon Kind="PanelTop" />
+          </shad:SettingItemControl.Icon>
+          <ToggleSwitch IsChecked="{Binding PreventAltWindowMenu}"
+                        OffContent=""
+                        OnContent="" />
+        </shad:SettingItemControl>
+      </StackPanel>
+
+      <StackPanel Spacing="8">
+        <TextBlock Text="排除"
+                   Classes="H4" />
+        <TextBlock Text="每行一个进程名或窗口标题关键字"
+                   Classes="Small Muted"
+                   TextWrapping="Wrap" />
+
+        <TextBlock Text="排除窗口（不可被拖 / 缩放）"
+                   Margin="0,4,0,0"
+                   FontWeight="SemiBold" />
+        <WrapPanel ItemSpacing="6"
+                   LineSpacing="6">
+          <Button Classes="Outline Sm"
+                  Content="notepad.exe"
+                  Command="{Binding AppendWindowExcludeChipCommand}"
+                  CommandParameter="notepad.exe" />
+          <Button Classes="Outline Sm"
+                  Content="code.exe"
+                  Command="{Binding AppendWindowExcludeChipCommand}"
+                  CommandParameter="code.exe" />
+          <Button Classes="Outline Sm"
+                  Content="msedge.exe"
+                  Command="{Binding AppendWindowExcludeChipCommand}"
+                  CommandParameter="msedge.exe" />
+        </WrapPanel>
+        <TextBox Text="{Binding ExcludedAppsDraft}"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 MinHeight="88"
+                 PlaceholderText="例如 notepad.exe" />
+
+        <TextBlock Text="排除修饰键（前台时不抢 Alt / Win）"
+                   Margin="0,8,0,0"
+                   FontWeight="SemiBold" />
+        <WrapPanel ItemSpacing="6"
+                   LineSpacing="6">
+          <Button Classes="Outline Sm"
+                  Content="game.exe"
+                  Command="{Binding AppendModifierExcludeChipCommand}"
+                  CommandParameter="game.exe" />
+          <Button Classes="Outline Sm"
+                  Content="steam.exe"
+                  Command="{Binding AppendModifierExcludeChipCommand}"
+                  CommandParameter="steam.exe" />
+        </WrapPanel>
+        <TextBox Text="{Binding ModifierExcludedAppsDraft}"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 MinHeight="88"
+                 PlaceholderText="例如 game.exe" />
+
+        <Grid ColumnDefinitions="*,Auto"
+              Margin="0,4,0,8">
+          <TextBlock VerticalAlignment="Center"
+                     Classes="Small Muted"
+                     Text="有未保存的更改"
+                     IsVisible="{Binding HasUnappliedExcludeChanges}" />
+          <Button Grid.Column="1"
+                  Content="应用排除列表"
+                  Command="{Binding ApplyExclusionsCommand}" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
