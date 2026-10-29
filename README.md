@@ -73,6 +73,12 @@
 dotnet build plugin/MioKit.GrabAndMove.csproj -c Release
 ```
 
-使用 MioKit 插件打包流程生成 `.nupkg`（例如 `artifacts/MioKit.GrabAndMove.<version>.nupkg`），再在宿主中安装。
+本地打包：
+
+```powershell
+.\pack.ps1 -PackageVersion 0.0.1-beta.5
+```
+
+输出：`artifacts/MioKit.GrabAndMove.<version>.nupkg`。推送 `v*` 标签（如 `v0.0.1-beta.5`）后，GitHub Actions 会用同一脚本打包，并把 `.nupkg` 挂到对应 GitHub Release。
 
 几何 Overlay、Game Mode 抑制等后续能力说明见 [docs/future-overlay-and-game-mode.md](docs/future-overlay-and-game-mode.md)。
