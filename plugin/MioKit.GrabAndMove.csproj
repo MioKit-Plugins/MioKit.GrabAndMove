@@ -27,6 +27,11 @@
       <Pack>true</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Update="Assets\icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Pack>true</Pack>
+      <PackagePath>Assets\icon.png</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="GenerateMioKitPluginManifest" BeforeTargets="GenerateNuspec">

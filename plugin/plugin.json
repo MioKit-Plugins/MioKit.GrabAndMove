@@ -5,6 +5,7 @@
   "description": "按住修饰键后在窗口任意位置拖动以移动或调整大小",
   "category": "Category",
   "author": "tinyisle",
+  "icon": "Assets/icon.png",
   "assembly": "MioKit.GrabAndMove.dll",
   "minSdkVersion": "1.2.3",
   "minHostVersion": "1.2.3",
