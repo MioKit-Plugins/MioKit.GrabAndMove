@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="GrabAndMove.Views.ExcludeAppPickerOverlay"
+        Title=""
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        CanResize="False"
+        WindowDecorations="None"
+        Topmost="True"
+        TransparencyLevelHint="Transparent"
+        Background="Transparent"
+        IsHitTestVisible="False">
+  <Grid IsHitTestVisible="False">
+    <Border BorderThickness="2"
+            BorderBrush="{DynamicResource ShadPrimaryBrush}"
+            Background="{DynamicResource ShadPrimaryBrush}"
+            Opacity="0.12"
+            CornerRadius="8"
+            IsHitTestVisible="False" />
+
+    <Border x:Name="CaptionHost"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Margin="10"
+            Padding="10,8"
+            MaxWidth="320"
+            Background="{DynamicResource ShadPopoverBrush}"
+            BorderBrush="{DynamicResource ShadBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            IsHitTestVisible="False">
+      <StackPanel Spacing="2">
+        <TextBlock x:Name="CaptionTitle"
+                   FontSize="13"
+                   FontWeight="SemiBold"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBlock x:Name="CaptionHint"
+                   Classes="Small Muted"
+                   Text="松开以添加到排除列表" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

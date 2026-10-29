@@ -46,7 +46,7 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsAltSelected))]
     [NotifyPropertyChangedFor(nameof(IsWinSelected))]
-    [NotifyPropertyChangedFor(nameof(ShowPreventAltMenu))]
+    [NotifyPropertyChangedFor(nameof(AltMenuSettingOpacity))]
     [NotifyPropertyChangedFor(nameof(ModifierDisplayName))]
     [NotifyPropertyChangedFor(nameof(MoveGestureHint))]
     [NotifyPropertyChangedFor(nameof(ResizeGestureHint))]
@@ -62,20 +62,38 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasUnappliedExcludeChanges))]
+    [NotifyPropertyChangedFor(nameof(UnappliedChangesOpacity))]
     [NotifyCanExecuteChangedFor(nameof(ApplyExclusionsCommand))]
     private string _excludedAppsDraft = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasUnappliedExcludeChanges))]
+    [NotifyPropertyChangedFor(nameof(UnappliedChangesOpacity))]
     [NotifyCanExecuteChangedFor(nameof(ApplyExclusionsCommand))]
     private string _modifierExcludedAppsDraft = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WindowPickHintOpacity))]
+    private bool _isPickingWindowExclude;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ModifierPickHintOpacity))]
+    private bool _isPickingModifierExclude;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(WindowPickHintOpacity))]
+    private string _windowPickHint = "拖到窗口后松开";
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ModifierPickHintOpacity))]
+    private string _modifierPickHint = "拖到窗口后松开";
 
     public bool IsRunning => IsFeatureEnabled;
     public string StatusText => IsFeatureEnabled ? "运行中" : "已暂停";
     public double GestureCardsOpacity => IsFeatureEnabled ? 1 : 0.45;
     public bool IsAltSelected => ActivationModifier == GrabAndMoveModifier.Alt;
     public bool IsWinSelected => ActivationModifier == GrabAndMoveModifier.Win;
-    public bool ShowPreventAltMenu => ActivationModifier == GrabAndMoveModifier.Alt;
+    public double AltMenuSettingOpacity => IsAltSelected ? 1 : 0.45;
     public string ModifierDisplayName => ActivationModifier == GrabAndMoveModifier.Win ? "Win" : "Alt";
     public string MoveGestureHint => $"{ModifierDisplayName} + 左键拖动";
     public string ResizeGestureHint => RightClickResizeEnabled
@@ -91,11 +109,14 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
             NormalizeLines(_appliedModifierExcludedApps),
             StringComparison.Ordinal);
 
+    public double UnappliedChangesOpacity => HasUnappliedExcludeChanges ? 1 : 0;
+    public double WindowPickHintOpacity => IsPickingWindowExclude ? 1 : 0;
+    public double ModifierPickHintOpacity => IsPickingModifierExclude ? 1 : 0;
+
     public void LoadFromPlugin()
     {
         _isLoaded = false;
 
-        // Runtime service state is the source of truth for the hero toggle.
         IsFeatureEnabled = _service.IsFeatureEnabled;
         ActivationModifier = _plugin.GetActivationModifier() ?? GrabAndMoveModifier.Alt;
         RightClickResizeEnabled = _plugin.GetRightClickResizeEnabled() != false;
@@ -108,7 +129,32 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
 
         _isLoaded = true;
         OnPropertyChanged(nameof(HasUnappliedExcludeChanges));
+        OnPropertyChanged(nameof(UnappliedChangesOpacity));
         ApplyExclusionsCommand.NotifyCanExecuteChanged();
+    }
+
+    public void AppendWindowExcludeProcess(string? processFileName)
+    {
+        ExcludedAppsDraft = AppendLine(ExcludedAppsDraft, processFileName);
+    }
+
+    public void AppendModifierExcludeProcess(string? processFileName)
+    {
+        ModifierExcludedAppsDraft = AppendLine(ModifierExcludedAppsDraft, processFileName);
+    }
+
+    public void SetWindowPickPreview(string? processFileName)
+    {
+        WindowPickHint = string.IsNullOrWhiteSpace(processFileName)
+            ? "拖到窗口后松开"
+            : $"松开以添加 {processFileName}";
+    }
+
+    public void SetModifierPickPreview(string? processFileName)
+    {
+        ModifierPickHint = string.IsNullOrWhiteSpace(processFileName)
+            ? "拖到窗口后松开"
+            : $"松开以添加 {processFileName}";
     }
 
     partial void OnIsFeatureEnabledChanged(bool value)
@@ -161,18 +207,6 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
         ActivationModifier = GrabAndMoveModifier.Win;
     }
 
-    [RelayCommand]
-    private void AppendWindowExcludeChip(string? chip)
-    {
-        ExcludedAppsDraft = AppendLine(ExcludedAppsDraft, chip);
-    }
-
-    [RelayCommand]
-    private void AppendModifierExcludeChip(string? chip)
-    {
-        ModifierExcludedAppsDraft = AppendLine(ModifierExcludedAppsDraft, chip);
-    }
-
     [RelayCommand(CanExecute = nameof(HasUnappliedExcludeChanges))]
     private void ApplyExclusions()
     {
@@ -189,6 +223,7 @@ internal partial class GrabAndMoveConfigViewModel : ObservableObject
         _service.ReloadSettingsFromPlugin();
 
         OnPropertyChanged(nameof(HasUnappliedExcludeChanges));
+        OnPropertyChanged(nameof(UnappliedChangesOpacity));
         ApplyExclusionsCommand.NotifyCanExecuteChanged();
 
         Window?.GetShadToastManager()

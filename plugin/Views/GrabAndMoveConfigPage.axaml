@@ -9,6 +9,44 @@
              d:DesignHeight="640"
              x:Class="GrabAndMove.Views.GrabAndMoveConfigPage"
              x:DataType="views:GrabAndMoveConfigViewModel">
+  <UserControl.Styles>
+    <Style Selector="Button.modifier-card">
+      <Setter Property="Background" Value="{DynamicResource ShadCardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ShadBorderBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="Padding" Value="14,12" />
+      <Setter Property="MinHeight" Value="78" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Button.modifier-card.selected">
+      <Setter Property="Background" Value="{DynamicResource ShadPrimaryBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ShadPrimaryBrush}" />
+      <Setter Property="Foreground" Value="{DynamicResource ShadPrimaryForegroundBrush}" />
+    </Style>
+    <Style Selector="Button.modifier-card.selected TextBlock">
+      <Setter Property="Foreground" Value="{DynamicResource ShadPrimaryForegroundBrush}" />
+    </Style>
+    <Style Selector="Button.modifier-card.selected TextBlock.Muted">
+      <Setter Property="Opacity" Value="0.85" />
+    </Style>
+    <Style Selector="Border.picker-host">
+      <Setter Property="Width" Value="36" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Background" Value="{DynamicResource ShadCardBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ShadBorderBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Border.picker-host.picking">
+      <Setter Property="BorderBrush" Value="{DynamicResource ShadPrimaryBrush}" />
+      <Setter Property="Background" Value="{DynamicResource ShadPrimaryBrush}" />
+    </Style>
+  </UserControl.Styles>
+
   <ScrollViewer HorizontalScrollBarVisibility="Disabled"
                 VerticalScrollBarVisibility="Auto">
     <StackPanel Margin="20"
@@ -52,12 +90,14 @@
               <Border Padding="10,4"
                       CornerRadius="999"
                       HorizontalAlignment="Right"
+                      MinWidth="64"
                       Background="{DynamicResource ShadCardBrush}"
                       BorderBrush="{DynamicResource ShadBorderBrush}"
                       BorderThickness="1">
                 <TextBlock Text="{Binding StatusText}"
                            Classes="Small"
-                           FontWeight="SemiBold" />
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center" />
               </Border>
               <StackPanel Orientation="Horizontal"
                           Spacing="8"
@@ -77,6 +117,7 @@
             <Border Grid.Column="0"
                     Padding="12"
                     CornerRadius="12"
+                    MinHeight="64"
                     Background="{DynamicResource ShadCardBrush}"
                     BorderBrush="{DynamicResource ShadBorderBrush}"
                     BorderThickness="1"
@@ -92,6 +133,7 @@
             <Border Grid.Column="2"
                     Padding="12"
                     CornerRadius="12"
+                    MinHeight="64"
                     Background="{DynamicResource ShadCardBrush}"
                     BorderBrush="{DynamicResource ShadBorderBrush}"
                     BorderThickness="1"
@@ -119,10 +161,8 @@
                    FontWeight="SemiBold" />
         <Grid ColumnDefinitions="*,8,*">
           <Button Grid.Column="0"
-                  Classes="Outline"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Left"
-                  Padding="14,12"
+                  Classes="modifier-card"
+                  Classes.selected="{Binding IsAltSelected}"
                   Command="{Binding SelectAltModifierCommand}">
             <StackPanel Spacing="2">
               <TextBlock Text="Alt"
@@ -131,18 +171,12 @@
               <TextBlock Text="默认，兼容多数应用"
                          Classes="Small Muted"
                          TextWrapping="Wrap" />
-              <TextBlock Text="已选中"
-                         Classes="Small"
-                         IsVisible="{Binding IsAltSelected}"
-                         Foreground="{DynamicResource ShadPrimaryBrush}" />
             </StackPanel>
           </Button>
 
           <Button Grid.Column="2"
-                  Classes="Outline"
-                  HorizontalAlignment="Stretch"
-                  HorizontalContentAlignment="Left"
-                  Padding="14,12"
+                  Classes="modifier-card"
+                  Classes.selected="{Binding IsWinSelected}"
                   Command="{Binding SelectWinModifierCommand}">
             <StackPanel Spacing="2">
               <TextBlock Text="Windows"
@@ -151,10 +185,6 @@
               <TextBlock Text="避免与菜单快捷键冲突"
                          Classes="Small Muted"
                          TextWrapping="Wrap" />
-              <TextBlock Text="已选中"
-                         Classes="Small"
-                         IsVisible="{Binding IsWinSelected}"
-                         Foreground="{DynamicResource ShadPrimaryBrush}" />
             </StackPanel>
           </Button>
         </Grid>
@@ -171,11 +201,13 @@
 
         <shad:SettingItemControl Title="抑制 Alt 窗口菜单"
                                  Description="拖动或缩放后松开 Alt 时，不再弹出系统窗口菜单。"
-                                 IsVisible="{Binding ShowPreventAltMenu}">
+                                 IsEnabled="{Binding IsAltSelected}"
+                                 Opacity="{Binding AltMenuSettingOpacity}">
           <shad:SettingItemControl.Icon>
             <LucideIcon Kind="PanelTop" />
           </shad:SettingItemControl.Icon>
           <ToggleSwitch IsChecked="{Binding PreventAltWindowMenu}"
+                        IsEnabled="{Binding IsAltSelected}"
                         OffContent=""
                         OnContent="" />
         </shad:SettingItemControl>
@@ -184,48 +216,64 @@
       <StackPanel Spacing="8">
         <TextBlock Text="排除"
                    Classes="H4" />
-        <TextBlock Text="每行一个进程名或窗口标题关键字"
+        <TextBlock Text="每行一个进程名或窗口标题关键字。按住准星拖到目标窗口后松开即可添加。"
                    Classes="Small Muted"
                    TextWrapping="Wrap" />
 
-        <TextBlock Text="排除窗口（不可被拖 / 缩放）"
-                   Margin="0,4,0,0"
-                   FontWeight="SemiBold" />
-        <WrapPanel ItemSpacing="6"
-                   LineSpacing="6">
-          <Button Classes="Outline Sm"
-                  Content="notepad.exe"
-                  Command="{Binding AppendWindowExcludeChipCommand}"
-                  CommandParameter="notepad.exe" />
-          <Button Classes="Outline Sm"
-                  Content="code.exe"
-                  Command="{Binding AppendWindowExcludeChipCommand}"
-                  CommandParameter="code.exe" />
-          <Button Classes="Outline Sm"
-                  Content="msedge.exe"
-                  Command="{Binding AppendWindowExcludeChipCommand}"
-                  CommandParameter="msedge.exe" />
-        </WrapPanel>
+        <Grid ColumnDefinitions="*,Auto"
+              Margin="0,4,0,0">
+          <TextBlock Text="排除窗口（不可被拖 / 缩放）"
+                     FontWeight="SemiBold"
+                     VerticalAlignment="Center" />
+          <Border x:Name="WindowExcludePicker"
+                  Grid.Column="1"
+                  Classes="picker-host"
+                  Classes.picking="{Binding IsPickingWindowExclude}"
+                  ToolTip.Tip="按住并拖到要排除的窗口，松开添加进程名"
+                  PointerPressed="WindowExcludePicker_OnPointerPressed"
+                  PointerMoved="WindowExcludePicker_OnPointerMoved"
+                  PointerReleased="WindowExcludePicker_OnPointerReleased"
+                  PointerCaptureLost="WindowExcludePicker_OnPointerCaptureLost">
+            <LucideIcon Kind="Focus"
+                        Size="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+          </Border>
+        </Grid>
+        <TextBlock Classes="Small Muted"
+                   MinHeight="18"
+                   Text="{Binding WindowPickHint}"
+                   Opacity="{Binding WindowPickHintOpacity}" />
         <TextBox Text="{Binding ExcludedAppsDraft}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
                  MinHeight="88"
                  PlaceholderText="例如 notepad.exe" />
 
-        <TextBlock Text="排除修饰键（前台时不抢 Alt / Win）"
-                   Margin="0,8,0,0"
-                   FontWeight="SemiBold" />
-        <WrapPanel ItemSpacing="6"
-                   LineSpacing="6">
-          <Button Classes="Outline Sm"
-                  Content="game.exe"
-                  Command="{Binding AppendModifierExcludeChipCommand}"
-                  CommandParameter="game.exe" />
-          <Button Classes="Outline Sm"
-                  Content="steam.exe"
-                  Command="{Binding AppendModifierExcludeChipCommand}"
-                  CommandParameter="steam.exe" />
-        </WrapPanel>
+        <Grid ColumnDefinitions="*,Auto"
+              Margin="0,8,0,0">
+          <TextBlock Text="排除修饰键（前台时不抢 Alt / Win）"
+                     FontWeight="SemiBold"
+                     VerticalAlignment="Center" />
+          <Border x:Name="ModifierExcludePicker"
+                  Grid.Column="1"
+                  Classes="picker-host"
+                  Classes.picking="{Binding IsPickingModifierExclude}"
+                  ToolTip.Tip="按住并拖到目标窗口，松开添加进程名"
+                  PointerPressed="ModifierExcludePicker_OnPointerPressed"
+                  PointerMoved="ModifierExcludePicker_OnPointerMoved"
+                  PointerReleased="ModifierExcludePicker_OnPointerReleased"
+                  PointerCaptureLost="ModifierExcludePicker_OnPointerCaptureLost">
+            <LucideIcon Kind="Focus"
+                        Size="16"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center" />
+          </Border>
+        </Grid>
+        <TextBlock Classes="Small Muted"
+                   MinHeight="18"
+                   Text="{Binding ModifierPickHint}"
+                   Opacity="{Binding ModifierPickHintOpacity}" />
         <TextBox Text="{Binding ModifierExcludedAppsDraft}"
                  AcceptsReturn="True"
                  TextWrapping="Wrap"
@@ -236,8 +284,9 @@
               Margin="0,4,0,8">
           <TextBlock VerticalAlignment="Center"
                      Classes="Small Muted"
+                     MinHeight="18"
                      Text="有未保存的更改"
-                     IsVisible="{Binding HasUnappliedExcludeChanges}" />
+                     Opacity="{Binding UnappliedChangesOpacity}" />
           <Button Grid.Column="1"
                   Content="应用排除列表"
                   Command="{Binding ApplyExclusionsCommand}" />
