@@ -7,7 +7,7 @@ namespace GrabAndMove.Models;
 /// Logic adapted from Microsoft PowerToys GrabAndMove (MIT).
 /// Copyright (c) Microsoft Corporation.
 /// </summary>
-internal enum GrabAndMoveModifier
+public enum GrabAndMoveModifier
 {
     [Description("Alt")]
     Alt = 0,
